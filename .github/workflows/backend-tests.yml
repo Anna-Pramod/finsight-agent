@@ -1,0 +1,18 @@
+# Run backend (FastAPI) tests.
+# Placeholder skeleton — real steps implemented in Issue #4.
+name: backend-tests
+
+on:
+  workflow_dispatch:
+  # push:
+  #   branches: [main]
+  #   paths: ["backend/**", ".github/workflows/backend-tests.yml"]
+
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder
+        run: |
+          echo "TODO(#4): actions/setup-python, then pip install -e backend[dev]"
+          echo "then run: cd backend && pytest"

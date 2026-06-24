@@ -1,0 +1,5 @@
+{"id": "q-networth-1", "expected_tools": ["fetch_net_worth"], "must_disclose_missing": true}
+{"id": "q-loan-1", "expected_tools": ["fetch_net_worth", "fetch_credit_report"], "must_show_assumptions": true, "must_not": ["guarantee_approval"]}
+{"id": "q-sip-1", "expected_tools": ["fetch_mf_transactions"], "must_disclose_missing": ["benchmark_data", "historical_market_data"], "must_not": ["buy_sell_recommendation"]}
+{"id": "q-risk-1", "expected_tools": ["fetch_credit_report", "fetch_net_worth", "fetch_bank_transactions"], "must_not": ["alarmist_unsupported_claim"]}
+{"id": "q-missing-1", "expected_tools": ["fetch_net_worth"], "must_disclose_missing": true}

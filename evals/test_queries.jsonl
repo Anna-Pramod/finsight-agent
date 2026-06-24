@@ -1,0 +1,5 @@
+{"id": "q-networth-1", "workflow": "net_worth_growth", "persona_phone": "1313131313", "query": "How is my net worth growing?"}
+{"id": "q-loan-1", "workflow": "loan_affordability", "persona_phone": "1414141414", "query": "Can I afford a 50L home loan?"}
+{"id": "q-sip-1", "workflow": "sip_performance", "persona_phone": "7777777777", "query": "Which of my SIPs underperformed the market?"}
+{"id": "q-risk-1", "workflow": "financial_risk", "persona_phone": "7777777777", "query": "What should I worry about in my finances?"}
+{"id": "q-missing-1", "workflow": "net_worth_growth", "persona_phone": "1111111111", "query": "How is my net worth growing?"}

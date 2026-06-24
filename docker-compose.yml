@@ -1,0 +1,45 @@
+# ============================================================================
+# FinSight Agent — local development stack (DRAFT / scaffold).
+# Wired up in later issues. For now this documents the intended topology:
+#   fi-mcp  -> the upstream epiFi/fi-mcp-dev Go server (MCP layer)
+#   backend -> FastAPI + ADK agent
+#   frontend-> Next.js dev server
+# ============================================================================
+services:
+  # Upstream Fi MCP Dev server (clone into external/fi-mcp-dev first).
+  fi-mcp:
+    image: golang:1.23
+    working_dir: /app
+    command: sh -c "go mod tidy && FI_MCP_PORT=8080 go run ."
+    environment:
+      FI_MCP_PORT: "8080"
+    volumes:
+      - ./external/fi-mcp-dev:/app
+    ports:
+      - "8080:8080"
+
+  backend:
+    build:
+      context: ./backend
+    env_file:
+      - .env
+    environment:
+      # Inside the compose network, reach the MCP server by service name.
+      FI_MCP_BASE_URL: "http://fi-mcp:8080"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - fi-mcp
+
+  frontend:
+    image: node:20
+    working_dir: /app
+    command: sh -c "npm install && npm run dev"
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: "http://localhost:8000"
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend

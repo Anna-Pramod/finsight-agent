@@ -1,0 +1,17 @@
+# Lint backend (ruff) and frontend (eslint).
+# Placeholder skeleton — real steps implemented alongside Issues #3 and #15.
+name: lint
+
+on:
+  workflow_dispatch:
+  # push:
+  #   branches: [main]
+
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder
+        run: |
+          echo "TODO: ruff check backend"
+          echo "TODO: cd frontend && npm run lint"
