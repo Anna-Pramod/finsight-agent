@@ -1,6 +1,7 @@
 "use client";
-// Choose one of the 16 Fi MCP Dev demo personas (names only; phones stay server-side).
+// Choose a sample profile — plain-language descriptions, no jargon.
 import type { Persona } from "@/lib/types";
+import { PROFILE_BLURBS } from "@/lib/friendly";
 
 interface Props {
   personas: Persona[];
@@ -13,7 +14,7 @@ export default function PersonaSelector({ personas, selected, onSelect }: Props)
   return (
     <div className="card p-4">
       <label className="mb-1 block text-xs font-medium" style={{ color: "var(--ink-2)" }}>
-        Demo persona
+        Sample profile
       </label>
       <select
         className="w-full rounded-md border bg-transparent px-3 py-2 text-sm"
@@ -28,10 +29,13 @@ export default function PersonaSelector({ personas, selected, onSelect }: Props)
         ))}
       </select>
       {current && (
-        <p className="mt-2 text-xs" style={{ color: "var(--ink-muted)" }}>
-          {current.scenario}
+        <p className="mt-2 text-xs leading-relaxed" style={{ color: "var(--ink-muted)" }}>
+          {PROFILE_BLURBS[current.name] ?? current.scenario}
         </p>
       )}
+      <p className="mt-2 text-[11px]" style={{ color: "var(--ink-muted)" }}>
+        These are realistic sample profiles, so you can explore FinSight without connecting anything.
+      </p>
     </div>
   );
 }

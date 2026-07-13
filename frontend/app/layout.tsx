@@ -3,16 +3,16 @@ import Link from "next/link";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "FinSight Agent",
+  title: "FinSight — understand your money",
   description:
-    "Agentic fintech assistant over Fi MCP Dev — Google ADK + Gemini, grounded answers with visible tool calls.",
+    "Ask questions about your money in plain English and get clear, honest answers grounded in your own financial data.",
 };
 
 const nav = [
   { href: "/", label: "Home" },
-  { href: "/demo/", label: "Demo" },
-  { href: "/architecture/", label: "Architecture" },
-  { href: "/case-study/", label: "Case Study" },
+  { href: "/demo/", label: "Open FinSight" },
+  { href: "/architecture/", label: "How it works" },
+  { href: "/case-study/", label: "About" },
 ];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -21,8 +21,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen">
         <header className="border-b" style={{ borderColor: "var(--hairline)" }}>
           <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-            <Link href="/" className="font-semibold tracking-tight">
-              FinSight <span style={{ color: "var(--accent)" }}>Agent</span>
+            <Link href="/" className="text-lg font-semibold tracking-tight">
+              Fin<span style={{ color: "var(--accent)" }}>Sight</span>
             </Link>
             <nav className="flex gap-5 text-sm" style={{ color: "var(--ink-2)" }}>
               {nav.map((n) => (
@@ -35,11 +35,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </header>
         {children}
         <footer
-          className="mx-auto max-w-5xl px-4 py-8 text-xs"
-          style={{ color: "var(--ink-muted)" }}
+          className="mx-auto max-w-5xl border-t px-4 py-6 text-xs leading-relaxed"
+          style={{ color: "var(--ink-muted)", borderColor: "var(--hairline)" }}
         >
-          Demo uses synthetic data only (epiFi/fi-mcp-dev personas). FinSight Agent is not a
-          financial advisor.
+          FinSight explains your finances — it is not a financial adviser and never tells you to
+          buy, sell, or borrow. This preview runs on realistic sample data; no real accounts are
+          connected.
         </footer>
       </body>
     </html>
