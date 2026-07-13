@@ -1,18 +1,27 @@
-# Run backend (FastAPI) tests.
-# Placeholder skeleton — real steps implemented in Issue #4.
+# Run backend (FastAPI + agent layer) tests.
 name: backend-tests
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches: [main]
-  #   paths: ["backend/**", ".github/workflows/backend-tests.yml"]
+  push:
+    branches: [main]
+    paths: ["backend/**", ".github/workflows/backend-tests.yml"]
+  pull_request:
+    paths: ["backend/**"]
 
 jobs:
-  placeholder:
+  pytest:
     runs-on: ubuntu-latest
     steps:
-      - name: Placeholder
-        run: |
-          echo "TODO(#4): actions/setup-python, then pip install -e backend[dev]"
-          echo "then run: cd backend && pytest"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      # Tests use the upstream persona data via the local transport.
+      - name: Fetch upstream persona data
+        run: git clone --depth 1 https://github.com/epiFi/fi-mcp-dev.git external/fi-mcp-dev
+      - name: Install
+        run: pip install -e "backend[dev]"
+      - name: Test
+        run: cd backend && pytest -q

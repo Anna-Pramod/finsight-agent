@@ -1,18 +1,50 @@
-# Deploy the static Next.js frontend to GitHub Pages.
-# Placeholder skeleton — real build/deploy implemented in Issue #16.
+# Build the static Next.js frontend and deploy it to GitHub Pages.
+# Set the repository variable API_BASE_URL to the Cloud Run URL first
+# (Settings → Secrets and variables → Actions → Variables).
 name: frontend-pages
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches: [main]
-  #   paths: ["frontend/**", ".github/workflows/frontend-pages.yml"]
+  push:
+    branches: [main]
+    paths: ["frontend/**", ".github/workflows/frontend-pages.yml"]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
 
 jobs:
-  placeholder:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Placeholder
-        run: |
-          echo "TODO(#16): npm ci && npm run build with output:'export'"
-          echo "then upload ./frontend/out and deploy to GitHub Pages"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install
+        run: cd frontend && npm ci
+      - name: Build (static export)
+        env:
+          GITHUB_PAGES: "true"
+          NEXT_PUBLIC_API_BASE_URL: ${{ vars.API_BASE_URL }}
+        run: cd frontend && npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

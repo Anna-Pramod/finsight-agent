@@ -164,7 +164,7 @@ finsight-agent/
 
 ## Status
 
-🟡 **Scaffolding (Issue #1).** Only the project structure and documentation skeleton exist so far. No ADK, MCP, FastAPI, or frontend logic is implemented yet — those land in later issues.
+🟢 **Functional end-to-end.** Backend (FastAPI + Google ADK + Gemini over the six Fi MCP tools), safety validator, audit/tool-trace, Next.js frontend, and the eval suite are implemented and tested (28 backend tests). The hosted demo serves the upstream persona data in-process (`FI_MCP_MODE=local`); point `FI_MCP_MODE=http` at a running `fi-mcp-dev` for the live Go server. Remaining: Cloud Run + GitHub Pages deployment (see `docs/deployment.md`).
 
 ---
 
