@@ -2,7 +2,7 @@
 
 > A full-stack agentic fintech assistant built with Fi MCP Dev, Google ADK, Vertex AI, FastAPI, and Next.js.
 
-FinSight Agent is a solo, portfolio-grade Agentic AI project that lets a user *talk to their own money*. It connects a structured, user-controlled financial data layer (a Fi-style **MCP** server) to a reasoning agent (**Google ADK + Gemini/Vertex AI**), exposes it through a clean **FastAPI** backend, and presents it in a recruiter-friendly **Next.js** demo — with safety, auditability, and visible tool calls as first-class features.
+FinSight Agent is an Agentic AI project that lets a user *talk to their own money*. It connects a structured, user-controlled financial data layer (a Fi **MCP** server) to a reasoning agent (**Google ADK + Gemini/Vertex AI**), exposes it through a clean **FastAPI** backend, and presents it in a recruiter-friendly **Next.js** demo — with safety, auditability, and visible tool calls as first-class features.
 
 This is **not a generic chatbot**. Every answer is grounded in tool-retrieved financial data, every tool call is visible, and the agent is explicitly *not* a financial advisor.
 
