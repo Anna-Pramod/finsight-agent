@@ -15,10 +15,11 @@ Scroll slowly. Say:
 > with the receipts shown every time. Let me show you."
 
 **[0:20 – 0:40] Pick a profile**
-Open FinSight, choose **Debt-Heavy Low Performer**. Say:
-> "It runs on realistic sample profiles. This person has expensive debt and struggling
-> investments — instantly you see what they're worth, what they owe, and where their
-> money sits."
+Click **Open FinSight** — the welcome screen asks "Whose money shall we look at?"
+with profile cards. Tap **📉 Debt-Heavy Low Performer**. Say:
+> "You start by picking a person. This one's carrying expensive debt with struggling
+> investments — and instantly you see what they're worth, what they owe, and where
+> their money sits."
 
 **[0:40 – 1:20] The money moment — a real question**
 Click **"Can I afford a ₹50L home loan?"** While it thinks:

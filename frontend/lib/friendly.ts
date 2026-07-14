@@ -52,3 +52,31 @@ export function friendlyTool(tool: string): string {
 export function friendlyAsset(name: string): string {
   return ASSET_LABELS[name] ?? name;
 }
+
+// One emoji avatar per sample profile, keyed by profile name.
+export const PROFILE_EMOJI: Record<string, string> = {
+  "No Assets": "🌱",
+  "Portfolio Heavyweight": "🏋️",
+  "Lean Investor": "🎯",
+  "Multi-Account Juggler": "🤹",
+  "No Credit Score": "📇",
+  "No Bank Account": "💼",
+  "Debt-Heavy Low Performer": "📉",
+  "SIP Samurai": "🥷",
+  "Fixed Income Fanatic": "🛡️",
+  "Precious Metal Believer": "🪙",
+  "Dormant EPF Earner": "😴",
+  "Balanced Growth Tracker": "⚖️",
+  "Salary Sinkhole": "🕳️",
+  "Starter Saver": "🐣",
+  "Dual Income Dynamo": "⚡",
+  "Live-for-Today Spender": "🎉",
+};
+
+// Shown first in the picker — the most illustrative stories.
+export const FEATURED_PROFILES = [
+  "SIP Samurai",
+  "Debt-Heavy Low Performer",
+  "Salary Sinkhole",
+  "Starter Saver",
+];
