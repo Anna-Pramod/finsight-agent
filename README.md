@@ -187,4 +187,4 @@ OWASP mapping: [`docs/safety.md`](docs/safety.md). Architecture: [`docs/architec
 
 ---
 
-*Built as a portfolio project. Inspired by the "Let AI speak to your money" problem statement. The MCP foundation is based on [`epiFi/fi-mcp-dev`](https://github.com/epiFi/fi-mcp-dev).*
+ The MCP foundation is based on [`epiFi/fi-mcp-dev`](https://github.com/epiFi/fi-mcp-dev).*
