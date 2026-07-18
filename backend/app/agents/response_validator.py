@@ -20,18 +20,43 @@ from app.agents.root_agent import AgentTurnResult
 from app.schemas.chat import GroundedAnswer
 
 # Patterns that indicate the *question* is trying to subvert the agent.
+# Checked against a normalised form of the text (see _canonical) so that
+# leetspeak ("1gn0r3") and homoglyph tricks don't slip past.
 INJECTION_PATTERNS = [
-    r"ignore (all |any |your |previous |prior )*(instructions|rules|guidelines)",
-    r"disregard (all |any |your |previous |prior )*(instructions|rules|safety)",
-    r"(reveal|show|print|repeat) (me )?(your|the) (system )?(prompt|instructions)",
-    r"you are no longer",
-    r"pretend (you are|to be)",
-    r"act as (if|though|a different)",
+    r"ignore (all |any |your |previous |prior |the )*(instructions|rules|guidelines|prompt)",
+    r"disregard (all |any |your |previous |prior |the )*(instructions|rules|safety|guidelines)",
+    r"(reveal|show|print|repeat|translate|output|tell me) (me )?(your|the) (system |initial )?(prompt|instructions)",
+    r"you are (now |)(no longer|a |an )",
+    r"you are now\b",
+    r"pretend (you are|to be|that)",
+    r"act as (if|though|a different|an? )",
+    r"roleplay as|role-play as",
     r"jailbreak",
-    r"developer mode",
+    r"(developer|dev|god|admin|sudo) mode",
+    r"(disable|turn off|bypass|switch off|remove) (your |the |all )?(safety|guardrails?|checks?|filters?|restrictions?|rules)",
+    r"(no|without|zero) (restrictions?|rules|limits|filters|guardrails?)",
     r"fabricate|make up (the |some )?(data|numbers|figures)",
-    r"guarantee (me )?(a |the )?loan",
+    r"guarantee (me )?(a |the )?(loan|approval|return)",
+    r"as (the |a )?(developer|admin|owner)( of)?.{0,20}(authoris|authoriz|disable|enable|override)",
 ]
+
+# Checked against a "despaced" form (all non-letters removed) to defeat
+# character-spacing evasion like "i g n o r e   a l l   r u l e s".
+DESPACED_PATTERNS = [
+    r"ignore.{0,12}(instruction|rule|guideline|prompt)",
+    r"disregard.{0,12}(instruction|rule|safety)",
+    r"ignoreyour(rules|instructions)",
+    r"(disable|bypass|turnoff|remove).{0,4}(safety|guardrail|check|filter|restriction|rule)",
+    r"(developer|dev|god|admin|sudo)mode",
+    r"you(are)?now(no|a|an)",
+    r"no(restriction|rule|limit|filter|guardrail)",
+    r"jailbreak",
+    r"revealyour(prompt|instruction)",
+    r"(repeat|reveal|show|print|output|translate).{0,20}(systemprompt|yourprompt|yourinstruction)",
+]
+
+# Leetspeak / common homoglyph substitutions folded back to letters.
+_LEET = str.maketrans({"0": "o", "1": "i", "3": "e", "4": "a", "5": "s", "7": "t", "@": "a", "$": "s", "|": "i"})
 
 # Output phrasing that would cross the not-an-advisor line.
 FORBIDDEN_OUTPUT_PATTERNS = [
@@ -61,9 +86,22 @@ class ValidationResult:
     reason: str | None = None
 
 
+def _canonical(question: str) -> str:
+    """Lowercase and fold leetspeak/homoglyphs so evasions read as plain text."""
+    return question.lower().translate(_LEET)
+
+
+def _despace(question: str) -> str:
+    """Strip everything but letters, defeating character-spacing evasion."""
+    return re.sub(r"[^a-z]", "", _canonical(question))
+
+
 def is_injection(question: str) -> bool:
-    q = question.lower()
-    return any(re.search(p, q) for p in INJECTION_PATTERNS)
+    canonical = _canonical(question)
+    if any(re.search(p, canonical) for p in INJECTION_PATTERNS):
+        return True
+    despaced = _despace(question)
+    return any(re.search(p, despaced) for p in DESPACED_PATTERNS)
 
 
 def validate_question(question: str) -> ValidationResult | None:
