@@ -1,6 +1,13 @@
 # FinSight Agent
 
-> A full-stack agentic fintech assistant built with Fi MCP Dev, Google ADK, Vertex AI, FastAPI, and Next.js.
+[![Live demo](https://img.shields.io/badge/live%20demo-anna--pramod.github.io%2Ffinsight--agent-2a78d6)](https://anna-pramod.github.io/finsight-agent/)
+[![Backend](https://img.shields.io/badge/backend-Cloud%20Run-4285F4)](https://finsight-backend-957033516823.asia-south1.run.app/health)
+[![Safety evals](https://img.shields.io/badge/safety%20evals-17%2F17%20%C2%B7%200%25%20false%20positive-0ca30c)](evals/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
+> A full-stack agentic fintech assistant built with Fi MCP Dev, Google ADK, Gemini, FastAPI, and Next.js.
+
+**▶ Live demo: https://anna-pramod.github.io/finsight-agent/** — pick a sample profile and ask about their money.
 
 FinSight Agent is an Agentic AI project that lets a user *talk to their own money*. It connects a structured, user-controlled financial data layer (a Fi **MCP** server) to a reasoning agent (**Google ADK + Gemini/Vertex AI**), exposes it through a clean **FastAPI** backend, and presents it in a recruiter-friendly **Next.js** demo — with safety, auditability, and visible tool calls as first-class features.
 
@@ -164,7 +171,19 @@ finsight-agent/
 
 ## Status
 
-🟢 **Functional end-to-end.** Backend (FastAPI + Google ADK + Gemini over the six Fi MCP tools), safety validator, audit/tool-trace, Next.js frontend, and the eval suite are implemented and tested (28 backend tests). The hosted demo serves the upstream persona data in-process (`FI_MCP_MODE=local`); point `FI_MCP_MODE=http` at a running `fi-mcp-dev` for the live Go server. Remaining: Cloud Run + GitHub Pages deployment (see `docs/deployment.md`).
+🟢 **Live and deployed.** Frontend on GitHub Pages, backend on Google Cloud Run, both
+reachable at the links above. The agent (Google ADK + Gemini over the six Fi MCP tools),
+three-layer safety validator with numeric provenance, audit/tool-trace, and eval suite
+are all implemented and verified:
+
+- **38 backend unit tests** (green in CI) — agent, MCP layer, validator, provenance.
+- **17/17 on the eval suite** — 5 workflow-correctness checks + 12 prompt-injection
+  attacks across 9 attack classes, graded by a deterministic + LLM-as-judge harness.
+- **0% false-positive rate** over 50 benign finance questions (`evals/benign_queries.jsonl`).
+
+The hosted demo serves the upstream persona data in-process (`FI_MCP_MODE=local`); point
+`FI_MCP_MODE=http` at a running `fi-mcp-dev` for the live Go server. Safety model and
+OWASP mapping: [`docs/safety.md`](docs/safety.md). Architecture: [`docs/architecture.md`](docs/architecture.md).
 
 ---
 

@@ -17,10 +17,16 @@ from app.schemas.audit import ToolCall
 
 @dataclass
 class ToolTraceRecorder:
-    """Wraps a Transport, recording every call as a ToolCall."""
+    """Wraps a Transport, recording every call as a ToolCall.
+
+    Also retains the raw payloads returned by each tool so the response
+    validator can verify that figures quoted in the answer actually appear in
+    the retrieved data (numeric provenance).
+    """
 
     inner: Any  # Transport
     calls: list[ToolCall] = field(default_factory=list)
+    payloads: list[dict[str, Any]] = field(default_factory=list)
 
     def call_tool(self, tool: str, arguments: dict[str, Any]) -> dict[str, Any]:
         start = time.monotonic()
@@ -32,6 +38,8 @@ class ToolTraceRecorder:
             )
             raise
         no_data = isinstance(data, dict) and data.get("status") == "no_data"
+        if isinstance(data, dict):
+            self.payloads.append(data)
         self.calls.append(
             ToolCall(
                 tool=tool,

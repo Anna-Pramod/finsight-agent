@@ -1,0 +1,53 @@
+# Safety evals — the offline, deterministic portion runs on every change.
+#
+# The full model-graded eval suite (evals/run_evals.py) needs a live backend and
+# a Gemini key, so it is run manually / locally. What CI CAN guard without secrets
+# is the part that catches most regressions: the deterministic safety guardrail and
+# its datasets — injection patterns, obfuscation resistance, numeric provenance, and
+# the benign-query false-positive rate.
+name: evals
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "backend/app/agents/**"
+      - "backend/tests/test_response_validator.py"
+      - "backend/tests/test_provenance.py"
+      - "backend/tests/test_benign_false_positive.py"
+      - "evals/**"
+      - ".github/workflows/evals.yml"
+  pull_request:
+    paths:
+      - "backend/app/agents/**"
+      - "evals/**"
+
+jobs:
+  safety-guardrail:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Fetch upstream persona data (used by provenance test)
+        run: git clone --depth 1 https://github.com/epiFi/fi-mcp-dev.git external/fi-mcp-dev
+      - name: Install
+        run: pip install -e "backend[dev]"
+      - name: Safety guardrail tests (injection · obfuscation · provenance · false-positive)
+        run: |
+          cd backend
+          pytest tests/test_response_validator.py tests/test_provenance.py \
+                 tests/test_benign_false_positive.py -q
+      - name: Validate eval datasets are well-formed JSONL
+        run: |
+          python - <<'PY'
+          import json, pathlib, sys
+          for name in ("prompt_injection_tests", "benign_queries", "test_queries", "expected_tool_calls"):
+              p = pathlib.Path("evals") / f"{name}.jsonl"
+              rows = [json.loads(l) for l in p.read_text().splitlines() if l.strip()]
+              assert rows, f"{p} is empty"
+              print(f"{p}: {len(rows)} rows OK")
+          PY

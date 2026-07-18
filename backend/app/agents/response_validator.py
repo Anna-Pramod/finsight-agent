@@ -14,8 +14,10 @@ rules — defence in depth, and independently testable. Implemented in Issue #7.
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Any
 
+from app.agents.provenance import extract_monetary_figures, unverified_figures
 from app.agents.root_agent import AgentTurnResult
 from app.schemas.chat import GroundedAnswer
 
@@ -84,6 +86,7 @@ class ValidationResult:
     answer: GroundedAnswer
     blocked: bool
     reason: str | None = None
+    unverified_figures: list[float] = field(default_factory=list)
 
 
 def _canonical(question: str) -> str:
@@ -111,8 +114,15 @@ def validate_question(question: str) -> ValidationResult | None:
     return None
 
 
-def validate_response(result: AgentTurnResult) -> ValidationResult:
-    """Post-hoc check of the agent's structured answer."""
+def validate_response(
+    result: AgentTurnResult, tool_payloads: list[dict[str, Any]] | None = None
+) -> ValidationResult:
+    """Post-hoc check of the agent's structured answer.
+
+    ``tool_payloads`` are the raw dicts returned by the tools this turn; when
+    supplied, monetary figures in the answer are verified against them (numeric
+    provenance). Passing None skips provenance (e.g. in unit tests).
+    """
     text = " ".join(
         filter(
             None,
@@ -145,7 +155,40 @@ def validate_response(result: AgentTurnResult) -> ValidationResult:
             reason="ungrounded_figures",
         )
 
-    return ValidationResult(answer=result.answer, blocked=False)
+    # Numeric provenance: every monetary figure should trace to the retrieved data.
+    unverified: list[float] = []
+    if tool_payloads:
+        full_text = " ".join(
+            filter(
+                None,
+                [
+                    result.answer.observation,
+                    result.answer.risk or "",
+                    result.answer.suggested_next_step or "",
+                ],
+            )
+        )
+        unverified = unverified_figures(full_text, tool_payloads)
+        monetary = extract_monetary_figures(full_text)
+        # Block only on a strong fabrication signal: a majority of monetary
+        # figures unsupported (a lone rounded aggregate shouldn't block a good
+        # answer, but inventing numbers should).
+        if len(unverified) >= 2 and len(unverified) > len(monetary) / 2:
+            return ValidationResult(
+                answer=GroundedAnswer(
+                    observation=(
+                        "I couldn't verify several of the figures in my draft answer "
+                        "against your connected data, so I've withheld it rather than "
+                        "risk quoting unsupported numbers."
+                    ),
+                    suggested_next_step="Please re-ask, and I'll answer only with figures I can trace to your records.",
+                ),
+                blocked=True,
+                reason="unverified_figures",
+                unverified_figures=unverified,
+            )
+
+    return ValidationResult(answer=result.answer, blocked=False, unverified_figures=unverified)
 
 
 __all__ = [

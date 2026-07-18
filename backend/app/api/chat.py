@@ -84,7 +84,7 @@ async def chat(req: ChatRequest) -> ChatResponse:
             )
         raise
 
-    verdict = validate_response(result)
+    verdict = validate_response(result, tool_payloads=trace.payloads)
     response = ChatResponse(
         session_id=session.session_id,
         persona=req.persona,
